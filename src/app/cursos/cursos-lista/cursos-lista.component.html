@@ -4,15 +4,22 @@
       <h4>Cursos</h4>
     </div>
     <div class="float-right">
-      <!-- <button type="button" class="btn btn-primary" [routerLink]="['novo']">Novo Curso</button> -->
-      <button type="button" class="btn btn-primary" >Novo Curso</button>
-      <button type="button" class="btn btn-secondary" (click)="onRefresh()">Atualizar</button>
+      <button type="button" class="btn btn-primary" [routerLink]="['novo']">
+        Novo Curso
+      </button>
+      <!-- <button type="button" class="btn btn-primary" >Novo Curso</button> -->
+      <button type="button" class="btn btn-secondary" (click)="onRefresh()">
+        Atualizar
+      </button>
       <!-- <button type="button" class="btn btn-secondary" >Atualizar</button> -->
     </div>
   </div>
   <div class="card-body">
-    <table class="table table-hover" *ngIf="(cursos$ | async) as cursos; else loadingError">
-    <!-- <table class="table table-hover"> -->
+    <table
+      class="table table-hover"
+      *ngIf="cursos$ | async as cursos; else loading"
+    >
+      <!-- <table class="table table-hover"> -->
       <thead>
         <tr>
           <th>#</th>
@@ -22,7 +29,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let curso of cursos">
-        <!-- <tr *ngFor="let curso of cursos$ | async"> -->
+          <!-- <tr *ngFor="let curso of cursos$ | async"> -->
           <td>{{ curso.id }}</td>
           <td>{{ curso.nome }}</td>
           <td>
@@ -33,7 +40,7 @@
               </button>
 
               <!-- <button class="btn btn-outline-danger mb-1 btn-sm" (click)="onDelete(curso)"> -->
-              <button class="btn btn-outline-danger mb-1 btn-sm" >
+              <button class="btn btn-outline-danger mb-1 btn-sm">
                 Remover
               </button>
             </span>
@@ -42,15 +49,18 @@
       </tbody>
     </table>
 
-    <ng-template #loadingError>
+    <ng-template #loading>
+      <span>Carregando Cursos...</span>
+    </ng-template>
+
+    <!-- <ng-template #loadingError>
       <div *ngIf="error$ | async; else loadingNoErrror">
         <span>Erro ao carregar cursos.</span>
       </div>
       <ng-template #loadingNoErrror>
         <span>Carregando Cursos...</span>
       </ng-template>
-
-    </ng-template>
+    </ng-template> -->
 
     <!--ng-template #loadingError>
       <div *ngIf="error$ | async; else loading" >
