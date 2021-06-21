@@ -1,22 +1,28 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { empty, Observable, of, Subject } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { BsModalRef, BsModalService, ModalModule } from 'ngx-bootstrap/modal';
 
 import { CursosService } from './../cursos.service';
 import { Curso } from '../curso';
-import { empty, Observable, of, Subject } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { AlertModalComponent } from '../../shared/alert-modal/alert-modal.component';
 
 @Component({
   templateUrl: './cursos-lista.component.html',
   styleUrls: ['./cursos-lista.component.scss'],
-  preserveWhitespaces: true
+  preserveWhitespaces: true,
 })
 export class CursosListaComponent implements OnInit, OnDestroy {
-
   // cursos!: Curso[];
   cursos$!: Observable<Curso[]>;
   error$ = new Subject<boolean>();
 
-  constructor(private service: CursosService) { }
+  bsModalRef!: BsModalRef;
+
+  constructor(
+    private service: CursosService,
+    private modalService: BsModalService
+  ) {}
 
   ngOnInit(): void {
     //this.service.list().subscribe(dados => this.cursos = dados);
@@ -30,14 +36,14 @@ export class CursosListaComponent implements OnInit, OnDestroy {
   }
 
   onRefresh() {
-    this.cursos$ = this.service.list().pipe(
-      catchError((error) => {
-        console.error(error);
-        this.error$.next(true);
-        // return empty();
-        return of<Curso[]>(); // também retorna um Observable vazio como empty().
-      })
-    );
+    // this.cursos$ = this.service.list().pipe(
+    //   catchError((error) => {
+    //     console.error(error);
+    //     this.error$.next(true);
+    //     // return empty();
+    //     return of<Curso[]>(); // também retorna um Observable vazio como empty().
+    //   })
+    // );
 
     // Outras possibilidades:
 
@@ -58,12 +64,23 @@ export class CursosListaComponent implements OnInit, OnDestroy {
     // .subscribe(
     //   (dados) => console.log(dados)
     // );
+
+    // Mostar erro com Modal
+    this.cursos$ = this.service.list().pipe(
+      catchError((error) => {
+        console.error(error);
+        this.handleerror();
+        return of<Curso[]>(); // também retorna um Observable vazio como empty().
+      })
+    );
   }
 
-  ngOnDestroy() {
-
+  handleerror() {
+    this.bsModalRef = this.modalService.show(AlertModalComponent);
+    // this.bsModalRef.content.closeBtnName = 'Close';
+    this.bsModalRef.content.type = 'danger';
+    this.bsModalRef.content.message = 'Erro ao carregar cursos.';
   }
 
-
-
+  ngOnDestroy() {}
 }
