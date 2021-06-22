@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Params } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Location } from '@angular/common';
 
+import { Curso } from '../curso';
 import { CursosService } from './../cursos.service';
 import { AlertModalService } from './../../shared/alert-modal.service';
+import { map, switchMap } from 'rxjs/operators';
 @Component({
   selector: 'app-cursos-form',
   templateUrl: './cursos-form.component.html',
@@ -17,11 +20,32 @@ export class CursosFormComponent implements OnInit {
     private fb: FormBuilder,
     private service: CursosService,
     private modal: AlertModalService,
-    private location: Location
+    private location: Location,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
+    // this.route.params.subscribe((params: Params) => {
+    //   const { id } = params;
+    //   const curso$ = this.service.loadByID(id);
+    //   curso$.subscribe(curso => {
+    //     this.updateForm(<Curso>curso);
+    //   })
+    // });
+    // refatorando...
+    this.route.params
+      .pipe(
+        map((params: Params) => params['id']),
+        switchMap((id: number) => this.service.loadByID(id))
+      )
+      .subscribe((curso) => this.updateForm(<Curso>curso)); // ATENÇÃO: nesse caso de subscribe em rota o próprio Angula faz o unsubscribe quando muda a rota.
+    // pesquise sobre operadores para uso em CRUD:
+    //    concatMap -> ordem da rquisição importa
+    //    mergeMap -> ordem da requição não importa (mais utilziado)
+    //    exaustMap -> só vai para a próxima chamada após recebe resposta. Muito comum em caso de Login.
+
     this.form = this.fb.group({
+      id: [null],
       nome: [
         null,
         [
@@ -31,6 +55,13 @@ export class CursosFormComponent implements OnInit {
         ],
       ],
     });
+  }
+
+  updateForm(curso: Curso) {
+    this.form.patchValue({
+      id: curso.id,
+      nome: curso.nome
+    })
   }
 
   hasError(field: string) {

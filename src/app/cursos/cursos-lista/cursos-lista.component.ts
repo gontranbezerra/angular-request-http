@@ -1,12 +1,13 @@
-import { AlertModalService } from './../../shared/alert-modal.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { empty, Observable, of, Subject } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { BsModalRef, BsModalService, ModalModule } from 'ngx-bootstrap/modal';
 
-import { CursosService } from './../cursos.service';
 import { Curso } from '../curso';
+import { CursosService } from './../cursos.service';
 import { AlertModalComponent } from '../../shared/alert-modal/alert-modal.component';
+import { AlertModalService } from './../../shared/alert-modal.service';
 
 @Component({
   templateUrl: './cursos-lista.component.html',
@@ -23,7 +24,9 @@ export class CursosListaComponent implements OnInit, OnDestroy {
   constructor(
     private service: CursosService,
     // private modalService: BsModalService
-    private alertService: AlertModalService
+    private alertService: AlertModalService,
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
@@ -83,6 +86,14 @@ export class CursosListaComponent implements OnInit, OnDestroy {
     // this.bsModalRef.content.message = 'Erro ao carregar cursos.';
 
     this.alertService.showAlertDanger('Erro ao carregar cursos.');
+  }
+
+  onEdit(id: number) {
+    this.router.navigate(['editar', id], { relativeTo: this.route });
+  }
+
+  onDelete(cruso: Curso) {
+
   }
 
   ngOnDestroy() {}
