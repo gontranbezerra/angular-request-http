@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { delay, tap } from 'rxjs/operators';
+import { delay, take, tap } from 'rxjs/operators';
 
 import { Curso } from './curso';
 import { environment } from './../../environments/environment';
@@ -9,7 +9,7 @@ import { environment } from './../../environments/environment';
   providedIn: 'root',
 })
 export class CursosService {
-  private readonly API = `${environment.API}cursos`;
+  private readonly API = `${environment.API}/cursos`;
 
   constructor(private http: HttpClient) {}
 
@@ -20,4 +20,12 @@ export class CursosService {
       tap(console.log)
     );
   }
+
+  create(curso: Curso) {
+    return this.http.post(this.API, curso)
+      .pipe(
+        take(1) // o take já fará a desincrição do Observable.
+      )
+  }
+
 }
