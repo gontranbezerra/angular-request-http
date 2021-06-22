@@ -25,29 +25,45 @@ export class CursosFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // this.route.params.subscribe((params: Params) => {
-    //   const { id } = params;
-    //   const curso$ = this.service.loadByID(id);
-    //   curso$.subscribe(curso => {
-    //     this.updateForm(<Curso>curso);
-    //   })
-    // });
-    // refatorando...
-    this.route.params
-      .pipe(
-        map((params: Params) => params['id']),
-        switchMap((id: number) => this.service.loadByID(id))
-      )
-      .subscribe((curso) => this.updateForm(<Curso>curso)); // ATENÇÃO: nesse caso de subscribe em rota o próprio Angula faz o unsubscribe quando muda a rota.
-    // pesquise sobre operadores para uso em CRUD:
-    //    concatMap -> ordem da rquisição importa
-    //    mergeMap -> ordem da requição não importa (mais utilziado)
-    //    exaustMap -> só vai para a próxima chamada após recebe resposta. Muito comum em caso de Login.
+    // // this.route.params.subscribe((params: Params) => {
+    // //   const { id } = params;
+    // //   const curso$ = this.service.loadByID(id);
+    // //   curso$.subscribe(curso => {
+    // //     this.updateForm(<Curso>curso);
+    // //   })
+    // // });
 
+    // Com o guard resolve na rota não será preciso carregar o curso na inicialização do componente porque ele irá carregar antes
+    // // refatorando...
+    // this.route.params
+    //   .pipe(
+    //     map((params: Params) => params['id']),
+    //     switchMap((id: number) => this.service.loadByID(id))
+    //   )
+    //   .subscribe((curso) => this.updateForm(<Curso>curso)); // ATENÇÃO: nesse caso de subscribe em rota o próprio Angula faz o unsubscribe quando muda a rota.
+    // // pesquise sobre operadores para uso em CRUD:
+    // //    concatMap -> ordem da rquisição importa
+    // //    mergeMap -> ordem da requição não importa (mais utilziado)
+    // //    exaustMap -> só vai para a próxima chamada após recebe resposta. Muito comum em caso de Login.
+
+    // this.form = this.fb.group({
+    //   id: [null],
+    //   nome: [
+    //     null,
+    //     [
+    //       Validators.required,
+    //       Validators.minLength(3),
+    //       Validators.maxLength(250),
+    //     ],
+    //   ],
+    // });
+
+    // Pegar da rota os dados do curso que está sendo carregado...
+    const curso = <Curso>this.route.snapshot.data['curso'];
     this.form = this.fb.group({
-      id: [null],
+      id: [curso.id],
       nome: [
-        null,
+        curso.nome,
         [
           Validators.required,
           Validators.minLength(3),
@@ -60,8 +76,8 @@ export class CursosFormComponent implements OnInit {
   updateForm(curso: Curso) {
     this.form.patchValue({
       id: curso.id,
-      nome: curso.nome
-    })
+      nome: curso.nome,
+    });
   }
 
   hasError(field: string) {
@@ -77,7 +93,7 @@ export class CursosFormComponent implements OnInit {
         // como o serviço já tem o take não precisa desincrever.
         // success => console.log('success'),
         (success) => {
-          this.modal.showAlertSuccess('Cruso criado.')
+          this.modal.showAlertSuccess('Cruso criado.');
           this.location.back();
         },
         // error => console.error(error),

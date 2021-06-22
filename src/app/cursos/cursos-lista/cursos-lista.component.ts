@@ -88,8 +88,8 @@ export class CursosListaComponent implements OnInit, OnDestroy {
     this.alertService.showAlertDanger('Erro ao carregar cursos.');
   }
 
-  onEdit(id: number) {
-    this.router.navigate(['editar', id], { relativeTo: this.route });
+  onEdit(id: number | null) {
+    id && this.router.navigate(['editar', id], { relativeTo: this.route });
   }
 
   onDelete(cruso: Curso) {
