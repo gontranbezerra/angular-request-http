@@ -89,16 +89,46 @@ export class CursosFormComponent implements OnInit {
     console.log(this.form.value);
     if (this.form.valid) {
       console.log('submit');
-      this.service.create(this.form.value).subscribe(
-        // como o serviço já tem o take não precisa desincrever.
-        // success => console.log('success'),
+
+      // if (this.form.value.id) {
+      //   // update
+      //   this.service.update(this.form.value).subscribe(
+      //     (success) => {
+      //       this.modal.showAlertSuccess('Cruso atualizado.');
+      //       this.location.back();
+      //     },
+      //     // error => console.error(error),
+      //     (error) => this.modal.showAlertDanger('Error ao atualizar curso.'),
+      //     () => console.log('update request OK')
+      //   );
+      // } else {
+      //   // create
+      //   this.service.create(this.form.value).subscribe(
+      //     // como o serviço já tem o take não precisa desincrever.
+      //     // success => console.log('success'),
+      //     (success) => {
+      //       this.modal.showAlertSuccess('Cruso criado.');
+      //       this.location.back();
+      //     },
+      //     // error => console.error(error),
+      //     (error) => this.modal.showAlertDanger('Error ao criar curso.'),
+      //     () => console.log('create request OK')
+      //   );
+      // }
+
+      // Refatorando...
+      let msgSuccess = 'Curso criado.';
+      let msgError = 'Error ao criar curso.';
+      if (this.form.value.id) {
+        msgSuccess = 'Curso atualizado.'
+        msgError = 'Error ao atualizar curso.';
+      };
+      this.service.save(this.form.value).subscribe(
         (success) => {
-          this.modal.showAlertSuccess('Cruso criado.');
+          this.modal.showAlertSuccess(msgSuccess);
           this.location.back();
         },
-        // error => console.error(error),
-        (error) => this.modal.showAlertDanger('Error ao criar curso.'),
-        () => console.log('request OK')
+        (error) => this.modal.showAlertDanger(msgError)
       );
     }
   }
