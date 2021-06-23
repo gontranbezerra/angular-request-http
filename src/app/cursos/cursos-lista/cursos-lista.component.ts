@@ -5,8 +5,9 @@ import { catchError, take, switchMap } from 'rxjs/operators';
 import { BsModalRef, BsModalService, ModalModule } from 'ngx-bootstrap/modal';
 
 import { Curso } from '../curso';
-import { CursosService } from './../cursos.service';
-import { AlertModalComponent } from '../../shared/alert-modal/alert-modal.component';
+// import { CursosService } from './../cursos.service';
+import { Cursos2Service } from '../cursos2.service';
+// import { AlertModalComponent } from '../../shared/alert-modal/alert-modal.component';
 import { AlertModalService } from './../../shared/alert-modal.service';
 
 @Component({
@@ -25,7 +26,8 @@ export class CursosListaComponent implements OnInit, OnDestroy {
   cursoSelecionado!: Curso;
 
   constructor(
-    private service: CursosService,
+    // private service: CursosService,
+    private service: Cursos2Service,
     private modalService: BsModalService,
     private alertService: AlertModalService,
     private router: Router,
