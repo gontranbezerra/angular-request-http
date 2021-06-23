@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { empty, Observable, of, Subject } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -15,15 +15,18 @@ import { AlertModalService } from './../../shared/alert-modal.service';
   preserveWhitespaces: true,
 })
 export class CursosListaComponent implements OnInit, OnDestroy {
+  @ViewChild('deleteModal') deleteModal!: TemplateRef<any>;
   // cursos!: Curso[];
   cursos$!: Observable<Curso[]>;
   error$ = new Subject<boolean>();
 
   // bsModalRef!: BsModalRef;
+  deleteModalRef!: BsModalRef;
+  cursoSelecionado!: Curso;
 
   constructor(
     private service: CursosService,
-    // private modalService: BsModalService
+    private modalService: BsModalService,
     private alertService: AlertModalService,
     private router: Router,
     private route: ActivatedRoute
@@ -93,7 +96,30 @@ export class CursosListaComponent implements OnInit, OnDestroy {
   }
 
   onDelete(cruso: Curso) {
+    this.cursoSelecionado = cruso;
+    this.deleteModalRef = this.modalService.show(this.deleteModal, {
+      class: 'modal-sm',
+    });
+  }
 
+  // onDelete(template: TemplateRef<any>) {
+  //   this.deleteModalRef = this.modalService.show(template, {
+  //     class: 'modal-sm',
+  //   });
+  // }
+
+  onConfirmDelete(): void {
+    // this.message = 'Confirmed!';
+    this.service.remove(<number>this.cursoSelecionado.id).subscribe(
+      (success) => this.onRefresh(),
+      (error) => this.alertService.showAlertDanger('Error ao remover curso.')
+    );
+    this.deleteModalRef.hide();
+  }
+
+  onDeclineDelete(): void {
+    // this.message = 'Declined!';
+    this.deleteModalRef.hide();
   }
 
   ngOnDestroy() {}
