@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { empty, Observable, of, Subject } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { EMPTY, Observable, of, pipe, Subject } from 'rxjs';
+import { catchError, take, switchMap } from 'rxjs/operators';
 import { BsModalRef, BsModalService, ModalModule } from 'ngx-bootstrap/modal';
 
 import { Curso } from '../curso';
@@ -95,11 +95,37 @@ export class CursosListaComponent implements OnInit, OnDestroy {
     id && this.router.navigate(['editar', id], { relativeTo: this.route });
   }
 
-  onDelete(cruso: Curso) {
-    this.cursoSelecionado = cruso;
-    this.deleteModalRef = this.modalService.show(this.deleteModal, {
-      class: 'modal-sm',
-    });
+  onDelete(curso: Curso) {
+    this.cursoSelecionado = curso;
+
+    // this.deleteModalRef = this.modalService.show(this.deleteModal, {
+    //   class: 'modal-sm',
+    // });
+
+    // this.alertService.showConfirm(
+    //   'Confirmação',
+    //   'Tem certeza que deseja remover esse curso?'
+    // );
+
+    const resultSubject = this.alertService.showConfirm(
+      'Confirmação',
+      'Tem certeza que deseja remover esse curso?'
+    );
+
+    const result$ = resultSubject.asObservable(); // transforma o Subject em Observable
+
+    result$
+      .pipe(
+        take(1),
+        switchMap(
+          (result) => (result ? this.service.remove(<number>curso.id) : EMPTY) // ou  `...: of()` | ou `...: of<Curso[]>()`
+        )
+      )
+      .subscribe( // o subscript só é executado de result for true, se for EMPTY não será executado
+        (success) => this.onRefresh(),
+        (error) => this.alertService.showAlertDanger('Error ao remover curso.')
+      );
+
   }
 
   // onDelete(template: TemplateRef<any>) {
