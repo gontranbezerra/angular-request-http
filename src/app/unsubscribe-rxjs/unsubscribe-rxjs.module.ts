@@ -21,6 +21,9 @@ import { PocUnsubComponent } from './components/poc-unsub.component';
     PocTakeComponent,
     PocUnsubComponent,
   ],
-  imports: [CommonModule, UnsubscribeRxjsRoutingModule],
+  imports: [
+    CommonModule,
+    UnsubscribeRxjsRoutingModule
+  ]
 })
 export class UnsubscribeRxjsModule {}
