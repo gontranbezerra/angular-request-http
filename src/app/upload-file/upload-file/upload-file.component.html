@@ -1,5 +1,26 @@
 <div class="mb-3">
   <label for="formFile" class="form-label">Selecionar arquivo</label>
-  <input class="form-control" type="file" id="formFile" (change)="onChange($event)">
+  <input
+    class="form-control"
+    type="file"
+    id="formFile"
+    (change)="onChange($event)"
+  />
 </div>
-<button type="button" class="btn btn-primary" (click)="onUpload()" [disabled]="!files">Upload</button>
+<div class="progress">
+  <div
+    class="progress-bar"
+    role="progressbar"
+    [style.width]="progress + '%'"
+  >
+    {{ progress }}%
+  </div>
+</div>
+<button
+  type="button"
+  class="btn btn-primary"
+  (click)="onUpload()"
+  [disabled]="!files"
+>
+  Upload
+</button>

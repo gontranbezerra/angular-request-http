@@ -1,6 +1,7 @@
-import { environment } from './../../../environments/environment';
 import { Component, OnInit } from '@angular/core';
+import { HttpEvent, HttpEventType } from '@angular/common/http';
 
+import { environment } from './../../../environments/environment';
 import { UploadFileService } from './../upload-file.service';
 
 @Component({
@@ -11,6 +12,7 @@ import { UploadFileService } from './../upload-file.service';
 export class UploadFileComponent implements OnInit {
 
   files!: Set<File>;
+  progress = 0;
 
   constructor(private service: UploadFileService) {}
 
@@ -23,13 +25,28 @@ export class UploadFileComponent implements OnInit {
     for (let i = 0; i < selectedFiles.length; i++) {
       this.files.add(selectedFiles[i]);
     }
+
+    this.progress = 0;
   }
 
   onUpload() {
     if (this.files && this.files.size > 0) {
       // this.service.upload(this.files, 'http://localhost:8000/upload')
-      this.service.upload(this.files, `${environment.BASE_URL}/upload`)  // usando proxy do Angular.
-        .subscribe(response => console.log('Upload concluído.'));
+      // this.service.upload(this.files, `${environment.BASE_URL}/upload`)  // usando proxy do Angular.
+      //   .subscribe(response => console.log('Upload concluído.'));
+      this.service
+        .upload(this.files, `${environment.BASE_URL}/upload`)
+        .subscribe((event: HttpEvent<Object>) => {
+          // HttpEventType
+          console.log(event);
+          if (event.type === HttpEventType.Response) {
+            console.log('Upload concluído.');
+          } else if(event.type === HttpEventType.UploadProgress) {
+            const percent = event.total ? Math.round((event.loaded * 100) / event.total) : 0;
+            console.log('Progresso: ', percent);
+            this.progress = percent;
+          }
+        });
     }
   }
 }
