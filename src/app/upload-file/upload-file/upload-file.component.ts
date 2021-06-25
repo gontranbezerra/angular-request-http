@@ -11,7 +11,6 @@ import { filterResponse, uploadProgress } from 'src/app/shared/rxjs-operators';
   styleUrls: ['./upload-file.component.scss'],
 })
 export class UploadFileComponent implements OnInit {
-
   files!: Set<File>;
   progress = 0;
 
@@ -56,14 +55,29 @@ export class UploadFileComponent implements OnInit {
       this.service
         .upload(this.files, `${environment.BASE_URL}/upload`)
         .pipe(
-          uploadProgress(progress => {
+          uploadProgress((progress) => {
             // console.log(progress);
             this.progress = progress;
           }),
           filterResponse()
         )
-        .subscribe(response => console.log('Upload concluído.'));
+        .subscribe((response) => console.log('Upload concluído.'));
     }
   }
 
+  onDownloadExcel() {
+    this.service
+      .download(`${environment.BASE_URL}/downloadExcel`)
+      .subscribe((response: any) => {
+        this.service.handleFile(response, 'report.xlsx');
+      });
+  }
+
+  onDownloadPDF() {
+    this.service
+      .download(`${environment.BASE_URL}/downloadPDF`)
+      .subscribe((response: any) => {
+        this.service.handleFile(response, 'report.pdf');
+      });
+  }
 }
