@@ -6,6 +6,7 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
+import { ReactiveSearchModule } from './reactive-search/reactive-search.module';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { AppRoutingModule } from './app-routing.module';
     ModalModule.forRoot(),
     SharedModule,
     AppRoutingModule,
+    ReactiveSearchModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -23,8 +23,16 @@ const routes: Routes = [
       ),
     data: { preload: true },
   },
-  { path: '', redirectTo: '/upload', pathMatch: 'full' },
-  { path: '**', redirectTo: '/upload' },
+  {
+    path: 'busca-reativa',
+    loadChildren: () =>
+      import('./reactive-search/reactive-search.module').then(
+        (m) => m.ReactiveSearchModule
+      ),
+    data: { preload: true },
+  },
+  { path: '', redirectTo: '/busca-reativa', pathMatch: 'full' },
+  { path: '**', redirectTo: '/' },
 ];
 
 @NgModule({
