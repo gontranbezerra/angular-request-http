@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, map, tap, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-lib-search',
@@ -18,7 +18,26 @@ export class LibSearchComponent implements OnInit {
 
   constructor(private http: HttpClient) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+
+    this.results$ = this.queryField.valueChanges.pipe(
+      map((search) => search.trim()),
+      filter((search) => search.length > 1),
+      debounceTime(500),
+      distinctUntilChanged(),
+      tap((search) => console.log(search, search.length)),
+      switchMap((search) =>
+        this.http.get(this.SEARCH_URL, {
+          params: {
+            search,
+            fields: this.FIELDS,
+          },
+        })
+      ),
+      tap((response: any) => (this.total = response.total)),
+      map((response: any) => response.results)
+    );
+  }
 
   onSearch() {
     let search = this.queryField.value;
